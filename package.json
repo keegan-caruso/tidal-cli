@@ -4,7 +4,7 @@
   "description": "Tidal music API CLI and MCP server",
   "type": "module",
   "engines": {
-    "node": ">=22.6"
+    "node": ">=24"
   },
   "bin": {
     "tidal": "./dist/bin/cli.js",
