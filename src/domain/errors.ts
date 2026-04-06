@@ -1,10 +1,10 @@
 export class TidalCliError extends Error {
-  constructor(
-    message: string,
-    public readonly code: string,
-  ) {
+  readonly code: string;
+
+  constructor(message: string, code: string) {
     super(message);
     this.name = 'TidalCliError';
+    this.code = code;
   }
 }
 
@@ -16,12 +16,12 @@ export class AuthConfigError extends TidalCliError {
 }
 
 export class ApiError extends TidalCliError {
-  constructor(
-    message: string,
-    public readonly statusCode?: number,
-  ) {
+  readonly statusCode?: number;
+
+  constructor(message: string, statusCode?: number) {
     super(message, 'API_ERROR');
     this.name = 'ApiError';
+    this.statusCode = statusCode;
   }
 }
 

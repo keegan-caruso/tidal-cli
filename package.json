@@ -12,9 +12,9 @@
   },
   "scripts": {
     "build": "tsc",
-    "dev:cli": "node --experimental-transform-types --import ./register.mjs bin/cli.ts",
-    "dev:mcp": "node --experimental-transform-types --import ./register.mjs bin/mcp-server.ts",
-    "test": "node --experimental-transform-types --import ./register.mjs --test 'src/**/*.test.ts'",
+    "dev:cli": "node --strip-types bin/cli.ts",
+    "dev:mcp": "node --strip-types bin/mcp-server.ts",
+    "test": "node --strip-types --test 'src/**/*.test.ts'",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

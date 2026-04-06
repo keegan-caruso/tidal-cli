@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import { program } from 'commander';
-import { initAuth, credentialsProvider } from '../src/services/auth.js';
-import { createApiClient, createTidalApiService } from '../src/services/tidal-api.js';
-import { SearchController } from '../src/controllers/search.js';
-import { createSearchCommand } from '../src/cli/commands/search.js';
+import { initAuth, credentialsProvider } from '../src/services/auth.ts';
+import { createApiClient, createTidalApiService } from '../src/services/tidal-api.ts';
+import { SearchController } from '../src/controllers/search.ts';
+import { createSearchCommand } from '../src/cli/commands/search.ts';
 
 async function main(): Promise<void> {
   await initAuth();

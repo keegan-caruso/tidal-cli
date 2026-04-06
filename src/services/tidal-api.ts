@@ -8,8 +8,8 @@ import type {
   Album,
   Artist,
   Playlist,
-} from '../domain/types.js';
-import { SearchError } from '../domain/errors.js';
+} from '../domain/types.ts';
+import { SearchError } from '../domain/errors.ts';
 
 export type ApiClient = ReturnType<typeof createAPIClient>;
 
@@ -24,7 +24,11 @@ export function createApiClient(
 }
 
 export class TidalApiService {
-  constructor(private readonly client: ApiClient) {}
+  private readonly client: ApiClient;
+
+  constructor(client: ApiClient) {
+    this.client = client;
+  }
 
   async search(options: SearchOptions): Promise<SearchResult> {
     const include = buildIncludeList(options.type);

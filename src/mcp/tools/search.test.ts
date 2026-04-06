@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { formatSearchResult } from './search.js';
-import type { SearchResult } from '../../domain/types.js';
+import { formatSearchResult } from './search.ts';
+import type { SearchResult } from '../../domain/types.ts';
 
 const emptyResult: SearchResult = {
   tracks: [],

@@ -1,8 +1,8 @@
 import { describe, it, mock } from 'node:test';
 import assert from 'node:assert/strict';
-import { SearchController } from './search.js';
-import type { TidalApiService } from '../services/tidal-api.js';
-import type { SearchResult } from '../domain/types.js';
+import { SearchController } from './search.ts';
+import type { TidalApiService } from '../services/tidal-api.ts';
+import type { SearchResult } from '../domain/types.ts';
 
 const emptyResult: SearchResult = {
   tracks: [],

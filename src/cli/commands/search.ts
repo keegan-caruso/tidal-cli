@@ -1,6 +1,6 @@
 import { Command } from 'commander';
-import type { SearchController } from '../../controllers/search.js';
-import type { SearchResult, SearchType } from '../../domain/types.js';
+import type { SearchController } from '../../controllers/search.ts';
+import type { SearchResult, SearchType } from '../../domain/types.ts';
 
 export function createSearchCommand(controller: SearchController): Command {
   const cmd = new Command('search');

@@ -42,17 +42,21 @@ codebase for consistency, not just in MCP files.
 - **CLI output**: use `process.stdout.write()`
 - **MCP tool results**: return `{ content: [{ type: 'text', text: '...' }] }`
 
-### Always use `.js` import extensions
-TypeScript 6 with `moduleResolution: "nodenext"` requires explicit file extensions in
-import paths. Even when importing a `.ts` file, the extension in the import must be `.js`:
+### Always use `.ts` import extensions
+Source files use `.ts` extensions in all relative imports:
 
 ```typescript
 // Correct
-import { SearchController } from '../controllers/search.js';
+import { SearchController } from '../controllers/search.ts';
 
-// Wrong — will fail at runtime
+// Wrong
+import { SearchController } from '../controllers/search.js';
 import { SearchController } from '../controllers/search';
 ```
+
+The `tsconfig.json` option `rewriteRelativeImportExtensions: true` rewrites these to `.js`
+in the compiled `dist/` output automatically. At dev/test time, Node 24's `--strip-types`
+resolves `.ts` imports directly.
 
 ## Environment Variables
 
@@ -83,20 +87,11 @@ npm run dev:cli         # Run CLI directly from TypeScript (no build needed)
 npm run dev:mcp         # Run MCP server directly from TypeScript
 ```
 
-## Node.js TypeScript Loader
+## Node.js TypeScript Execution
 
-The `dev:*` and `test` scripts use `--experimental-transform-types` (Node 22+) with two
-helper files at the project root:
-
-- `register.mjs` — calls `node:module`'s `register()` to install the loader hook
-- `loader.mjs` — the ESM resolve hook that rewrites `.js` imports to `.ts` at runtime
-
-This is needed because TypeScript's `nodenext` module resolution requires `.js` extensions
-in import paths (for compiled output correctness), but Node 22's type stripping doesn't
-automatically remap those extensions. The loader bridge handles this transparently.
-
-These files are **not used** when running the compiled `dist/` output — they are dev tooling
-only. When Node 24 with stable `--strip-types` is available, the loader can be removed.
+The `dev:*` and `test` scripts use Node 24's built-in `--strip-types` flag, which strips
+TypeScript type annotations at runtime with no extra tooling. No loader or bundler needed.
+Requires Node 24+.
 
 ## Dependency Wiring Pattern
 

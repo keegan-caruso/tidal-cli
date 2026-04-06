@@ -1,6 +1,6 @@
 import { init, credentialsProvider } from '@tidal-music/auth';
 import type { StorageAdapter } from '@tidal-music/auth';
-import { AuthConfigError } from '../domain/errors.js';
+import { AuthConfigError } from '../domain/errors.ts';
 
 function createInMemoryStorage(): StorageAdapter {
   const store = new Map<string, string>();

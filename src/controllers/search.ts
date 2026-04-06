@@ -1,8 +1,12 @@
-import type { TidalApiService } from '../services/tidal-api.js';
-import type { SearchOptions, SearchResult } from '../domain/types.js';
+import type { TidalApiService } from '../services/tidal-api.ts';
+import type { SearchOptions, SearchResult } from '../domain/types.ts';
 
 export class SearchController {
-  constructor(private readonly apiService: TidalApiService) {}
+  private readonly apiService: TidalApiService;
+
+  constructor(apiService: TidalApiService) {
+    this.apiService = apiService;
+  }
 
   async search(options: SearchOptions): Promise<SearchResult> {
     if (!options.query.trim()) {

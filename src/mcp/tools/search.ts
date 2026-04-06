@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import type { SearchController } from '../../controllers/search.js';
-import type { SearchResult } from '../../domain/types.js';
+import type { SearchController } from '../../controllers/search.ts';
+import type { SearchResult } from '../../domain/types.ts';
 
 export const searchToolName = 'tidal_search' as const;
 

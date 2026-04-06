@@ -1,7 +1,7 @@
 import { describe, it, beforeEach, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import { AuthConfigError } from '../domain/errors.js';
-import { initAuth } from './auth.js';
+import { AuthConfigError } from '../domain/errors.ts';
+import { initAuth } from './auth.ts';
 
 describe('initAuth', () => {
   const originalEnv = process.env;
