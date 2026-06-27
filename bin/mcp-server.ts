@@ -1,21 +1,33 @@
 #!/usr/bin/env node
-import { initAuth, credentialsProvider } from '../src/services/auth.ts';
+import { initUserAuth, credentialsProvider } from '../src/services/auth.ts';
 import { createApiClient, createTidalApiService } from '../src/services/tidal-api.ts';
 import { loadProjectConfig } from '../src/services/config.ts';
 import { loadProjectEnv } from '../src/services/env.ts';
 import { SearchController } from '../src/controllers/search.ts';
+import { UserController } from '../src/controllers/user.ts';
+import { QueueController } from '../src/controllers/queue.ts';
+import { ProfileController } from '../src/controllers/profile.ts';
 import { createMcpServer, startMcpServer } from '../src/mcp/server.ts';
 
 async function main(): Promise<void> {
   await loadProjectEnv();
   const config = await loadProjectConfig();
-  await initAuth();
+  await initUserAuth();
 
   const apiClient = createApiClient(credentialsProvider);
   const apiService = createTidalApiService(apiClient);
   const searchController = new SearchController(apiService, config);
+  const userController = new UserController(apiService, config);
+  const queueController = new QueueController(apiService);
+  const profileController = new ProfileController(apiService);
 
-  const server = createMcpServer(searchController);
+  const server = createMcpServer({
+    searchController,
+    userController,
+    queueController,
+    profileController,
+    apiService,
+  });
   await startMcpServer(server);
 }
 
