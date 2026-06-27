@@ -61,6 +61,19 @@ pnpm run build
 node dist/bin/cli.js search "Radiohead" --limit 1
 ```
 
+### Available Commands
+
+```bash
+tidal search <query>              # Search for music
+tidal login                       # Log in with your Tidal account
+tidal logout                      # Log out and clear tokens
+tidal collection [--type tracks]  # View saved tracks/albums/artists/playlists
+tidal mixes [--type daily]        # View personalized mixes
+tidal queue show                  # View current play queue
+tidal queue add <trackId...>      # Add tracks to queue
+tidal queue clear                 # Clear the queue
+```
+
 ## MCP Usage
 
 Run the MCP server over stdio:
@@ -69,15 +82,28 @@ Run the MCP server over stdio:
 pnpm run dev:mcp
 ```
 
-Registered tools:
+### Registered Tools
 
-- `tidal_search`
-- `tidal_get_track`
-- `tidal_get_album`
-- `tidal_get_artist`
-- `tidal_get_playlist`
+**Search & Detail:**
+- `tidal_search` — Search for tracks, albums, artists, playlists
+- `tidal_get_track`, `tidal_get_album`, `tidal_get_artist`, `tidal_get_playlist`
 
-`tidal_search` returns JSON in both `structuredContent` and text `content`.
+**User (requires login):**
+- `tidal_login_status` — Check if user is logged in
+- `tidal_get_collection` — Get saved tracks/albums/artists/playlists
+- `tidal_get_mixes` — Get personalized daily/discovery/new-release mixes
+
+**Recommendations (requires login):**
+- `tidal_get_listening_profile` — Comprehensive music taste summary (cached 24h)
+- `tidal_get_similar_artists`, `tidal_get_similar_tracks`, `tidal_get_similar_albums`
+- `tidal_get_artist_radio` — Radio-style mix based on an artist
+
+**Queue Management (requires login):**
+- `tidal_get_queue`, `tidal_list_queues` — View play queues
+- `tidal_add_to_queue`, `tidal_remove_from_queue`, `tidal_clear_queue`
+- `tidal_skip_to_track`, `tidal_update_queue`
+
+See [docs/RECOMMENDATIONS.md](docs/RECOMMENDATIONS.md) for how to use these tools to make personalized music recommendations.
 
 ## Development
 
