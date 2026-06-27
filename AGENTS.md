@@ -100,10 +100,12 @@ Requires Node 26+.
 Both entry points follow the same factory chain — no DI container:
 
 ```typescript
+await loadProjectEnv();                            // loads .env from process.cwd(), if present
+const config = await loadProjectConfig();          // loads .tidal-cli.json from process.cwd(), if present
 await initAuth();                                  // reads env vars, throws on missing
 const apiClient = createAPIClient(credentialsProvider);
 const apiService = createTidalApiService(apiClient);
-const searchController = new SearchController(apiService);
+const searchController = new SearchController(apiService, config);
 // → pass searchController to CLI commands or MCP server
 ```
 
