@@ -4,5 +4,6 @@ dist/
 .env
 .env.*
 !.env.example
+.tidal-cli.json
 coverage/
 *.tgz
