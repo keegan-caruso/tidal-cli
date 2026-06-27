@@ -75,3 +75,18 @@ export class NoOpenableResultError extends TidalCliError {
     this.name = 'NoOpenableResultError';
   }
 }
+
+export class UserAuthRequiredError extends TidalCliError {
+  constructor(message = 'User login required. Run "tidal login" to authenticate.') {
+    super(message, 'USER_AUTH_REQUIRED');
+    this.name = 'UserAuthRequiredError';
+  }
+}
+
+export class DeviceLoginError extends TidalCliError {
+  constructor(message: string, cause?: unknown) {
+    super(message, 'DEVICE_LOGIN_ERROR');
+    this.name = 'DeviceLoginError';
+    if (cause instanceof Error) this.cause = cause;
+  }
+}
