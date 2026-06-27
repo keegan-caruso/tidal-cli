@@ -1,9 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import {
-  collectOpenableResults,
-  formatCliSearchResult,
-} from './search.ts';
+import { collectOpenableResults, formatCliSearchResult } from './search.ts';
 import type { SearchResult } from '../../domain/search.ts';
 
 const result: SearchResult = {

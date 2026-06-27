@@ -1,5 +1,9 @@
 import { Command } from 'commander';
-import type { QueueController, GetQueueResult, ListQueuesResult } from '../../controllers/queue.ts';
+import type {
+  QueueController,
+  GetQueueResult,
+  ListQueuesResult,
+} from '../../controllers/queue.ts';
 import type { PlayQueue, QueueItem, RepeatMode } from '../../domain/queue.ts';
 import { formatCliError } from '../utils.ts';
 
@@ -17,13 +21,6 @@ interface QueueRemoveOptions {
   id?: string;
 }
 
-interface QueueUpdateOptions {
-  id?: string;
-  repeat?: string;
-  shuffle?: boolean;
-  noShuffle?: boolean;
-}
-
 export function createQueueCommand(controller: QueueController): Command {
   const cmd = new Command('queue');
   cmd.description('Manage your play queue');
@@ -32,7 +29,10 @@ export function createQueueCommand(controller: QueueController): Command {
   cmd
     .command('show', { isDefault: true })
     .description('Show the current play queue')
-    .option('--id <queueId>', 'Specific queue ID (uses active queue if not provided)')
+    .option(
+      '--id <queueId>',
+      'Specific queue ID (uses active queue if not provided)',
+    )
     .option('--json', 'Output raw JSON instead of formatted text')
     .action(async (options: QueueShowOptions) => {
       try {
@@ -78,7 +78,10 @@ export function createQueueCommand(controller: QueueController): Command {
   cmd
     .command('add <trackIds...>')
     .description('Add tracks to the queue')
-    .option('--id <queueId>', 'Specific queue ID (uses active queue if not provided)')
+    .option(
+      '--id <queueId>',
+      'Specific queue ID (uses active queue if not provided)',
+    )
     .option('-n, --next', 'Add tracks to play next (default: add to end)')
     .action(async (trackIds: string[], options: QueueAddOptions) => {
       try {
@@ -94,7 +97,9 @@ export function createQueueCommand(controller: QueueController): Command {
         });
 
         const positionText = options.next ? 'next' : 'end of queue';
-        process.stdout.write(`Added ${trackIds.length} track(s) to play ${positionText}.\n`);
+        process.stdout.write(
+          `Added ${trackIds.length} track(s) to play ${positionText}.\n`,
+        );
       } catch (err) {
         process.stderr.write(`${formatCliError(err)}\n`);
         process.exit(1);
@@ -105,28 +110,36 @@ export function createQueueCommand(controller: QueueController): Command {
   cmd
     .command('remove <trackId> <itemId>')
     .description('Remove a track from the queue')
-    .option('--id <queueId>', 'Specific queue ID (uses active queue if not provided)')
-    .action(async (trackId: string, itemId: string, options: QueueRemoveOptions) => {
-      try {
-        let queueId = options.id;
-        if (!queueId) {
-          const { queue } = await controller.getOrCreateQueue();
-          queueId = queue.id;
-        }
+    .option(
+      '--id <queueId>',
+      'Specific queue ID (uses active queue if not provided)',
+    )
+    .action(
+      async (trackId: string, itemId: string, options: QueueRemoveOptions) => {
+        try {
+          let queueId = options.id;
+          if (!queueId) {
+            const { queue } = await controller.getOrCreateQueue();
+            queueId = queue.id;
+          }
 
-        await controller.removeFromQueue(queueId, trackId, itemId);
-        process.stdout.write(`Removed track from queue.\n`);
-      } catch (err) {
-        process.stderr.write(`${formatCliError(err)}\n`);
-        process.exit(1);
-      }
-    });
+          await controller.removeFromQueue(queueId, trackId, itemId);
+          process.stdout.write(`Removed track from queue.\n`);
+        } catch (err) {
+          process.stderr.write(`${formatCliError(err)}\n`);
+          process.exit(1);
+        }
+      },
+    );
 
   // tidal queue clear
   cmd
     .command('clear')
     .description('Clear all upcoming tracks from the queue')
-    .option('--id <queueId>', 'Specific queue ID (uses active queue if not provided)')
+    .option(
+      '--id <queueId>',
+      'Specific queue ID (uses active queue if not provided)',
+    )
     .action(async (options: { id?: string }) => {
       try {
         let queueId = options.id;
@@ -147,28 +160,36 @@ export function createQueueCommand(controller: QueueController): Command {
   cmd
     .command('skip <trackId> <itemId>')
     .description('Skip to a specific track in the queue')
-    .option('--id <queueId>', 'Specific queue ID (uses active queue if not provided)')
-    .action(async (trackId: string, itemId: string, options: { id?: string }) => {
-      try {
-        let queueId = options.id;
-        if (!queueId) {
-          const { queue } = await controller.getOrCreateQueue();
-          queueId = queue.id;
-        }
+    .option(
+      '--id <queueId>',
+      'Specific queue ID (uses active queue if not provided)',
+    )
+    .action(
+      async (trackId: string, itemId: string, options: { id?: string }) => {
+        try {
+          let queueId = options.id;
+          if (!queueId) {
+            const { queue } = await controller.getOrCreateQueue();
+            queueId = queue.id;
+          }
 
-        await controller.skipTo(queueId, trackId, itemId);
-        process.stdout.write(`Skipped to track.\n`);
-      } catch (err) {
-        process.stderr.write(`${formatCliError(err)}\n`);
-        process.exit(1);
-      }
-    });
+          await controller.skipTo(queueId, trackId, itemId);
+          process.stdout.write(`Skipped to track.\n`);
+        } catch (err) {
+          process.stderr.write(`${formatCliError(err)}\n`);
+          process.exit(1);
+        }
+      },
+    );
 
   // tidal queue shuffle
   cmd
     .command('shuffle')
     .description('Toggle shuffle mode')
-    .option('--id <queueId>', 'Specific queue ID (uses active queue if not provided)')
+    .option(
+      '--id <queueId>',
+      'Specific queue ID (uses active queue if not provided)',
+    )
     .action(async (options: { id?: string }) => {
       try {
         let queueId = options.id;
@@ -189,7 +210,10 @@ export function createQueueCommand(controller: QueueController): Command {
   cmd
     .command('repeat')
     .description('Cycle repeat mode (none -> all -> one -> none)')
-    .option('--id <queueId>', 'Specific queue ID (uses active queue if not provided)')
+    .option(
+      '--id <queueId>',
+      'Specific queue ID (uses active queue if not provided)',
+    )
     .action(async (options: { id?: string }) => {
       try {
         let queueId = options.id;
@@ -249,7 +273,9 @@ function formatQueueResult(queue: PlayQueue): string {
   lines.push('');
   lines.push(`  Play Queue`);
   lines.push(`  ID: ${queue.id}`);
-  lines.push(`  Repeat: ${formatRepeatMode(queue.repeat)} | Shuffle: ${queue.shuffled ? 'on' : 'off'}`);
+  lines.push(
+    `  Repeat: ${formatRepeatMode(queue.repeat)} | Shuffle: ${queue.shuffled ? 'on' : 'off'}`,
+  );
   lines.push('');
 
   // Current track
@@ -289,7 +315,11 @@ function formatQueueResult(queue: PlayQueue): string {
   return `${lines.join('\n')}\n`;
 }
 
-function formatQueueItem(item: QueueItem, indent: string, index?: number): string {
+function formatQueueItem(
+  item: QueueItem,
+  indent: string,
+  index?: number,
+): string {
   const track = item.track;
   const num = index != null ? `${index}. ` : '';
   const explicit = track.explicit ? ' [E]' : '';
@@ -314,7 +344,9 @@ function formatQueuesListResult(result: ListQueuesResult): string {
       const futureCount = queue.future.length;
       lines.push(`  ${queue.id}`);
       lines.push(`    Now: ${current} | Up next: ${futureCount} tracks`);
-      lines.push(`    Repeat: ${formatRepeatMode(queue.repeat)} | Shuffle: ${queue.shuffled ? 'on' : 'off'}`);
+      lines.push(
+        `    Repeat: ${formatRepeatMode(queue.repeat)} | Shuffle: ${queue.shuffled ? 'on' : 'off'}`,
+      );
       lines.push('');
     }
   }

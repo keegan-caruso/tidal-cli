@@ -115,8 +115,6 @@ export interface McpServerOptions {
   apiService?: TidalApiService;
 }
 
-export function createMcpServer(options: McpServerOptions): McpServer;
-export function createMcpServer(searchController: SearchController): McpServer;
 export function createMcpServer(
   optionsOrController: McpServerOptions | SearchController,
 ): McpServer {
@@ -125,7 +123,13 @@ export function createMcpServer(
       ? optionsOrController
       : { searchController: optionsOrController };
 
-  const { searchController, userController, queueController, profileController, apiService } = options;
+  const {
+    searchController,
+    userController,
+    queueController,
+    profileController,
+    apiService,
+  } = options;
 
   const server = new McpServer({
     name: 'tidal-cli',

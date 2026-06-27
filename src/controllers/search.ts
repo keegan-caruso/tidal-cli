@@ -43,15 +43,21 @@ export class SearchController {
   }
 
   async getTrack(options: DetailOptions): Promise<Track> {
-    return this.apiService.getTrack(this.resolveDetailOptions(options, 'track'));
+    return this.apiService.getTrack(
+      this.resolveDetailOptions(options, 'track'),
+    );
   }
 
   async getAlbum(options: DetailOptions): Promise<Album> {
-    return this.apiService.getAlbum(this.resolveDetailOptions(options, 'album'));
+    return this.apiService.getAlbum(
+      this.resolveDetailOptions(options, 'album'),
+    );
   }
 
   async getArtist(options: DetailOptions): Promise<Artist> {
-    return this.apiService.getArtist(this.resolveDetailOptions(options, 'artist'));
+    return this.apiService.getArtist(
+      this.resolveDetailOptions(options, 'artist'),
+    );
   }
 
   async getPlaylist(options: DetailOptions): Promise<Playlist> {
@@ -74,7 +80,6 @@ export class SearchController {
     );
     const explicitFilter =
       options.explicitFilter ?? this.defaults.explicitFilter;
-    validateExplicitFilter(explicitFilter);
 
     const limit = normalizeLimit(options.limit ?? this.defaults.limit);
 
@@ -110,18 +115,6 @@ function validateSearchType(type: SearchType): void {
     throw new ValidationError(
       'Search type must be tracks, albums, artists, playlists, or all',
     );
-  }
-}
-
-function validateExplicitFilter(
-  explicitFilter: SearchOptions['explicitFilter'],
-): void {
-  if (
-    explicitFilter != null &&
-    explicitFilter !== 'INCLUDE' &&
-    explicitFilter !== 'EXCLUDE'
-  ) {
-    throw new ValidationError('Explicit filter must be INCLUDE or EXCLUDE');
   }
 }
 

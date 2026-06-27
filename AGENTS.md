@@ -3,6 +3,7 @@
 ## Project Overview
 
 A TypeScript 7 project exposing Tidal music search over two interfaces:
+
 - **CLI**: `tidal search <query>` via Commander.js
 - **MCP server**: `tidal_search` tool over stdio, for use with AI assistants
 
@@ -34,6 +35,7 @@ bin/              Entry points that wire the dependency chain together.
 ## Critical Rules
 
 ### NEVER use `console.log()`
+
 The MCP server communicates over stdout using JSON-RPC. Any stray `console.log()` call
 **will corrupt the protocol** and break MCP clients. This rule applies everywhere in the
 codebase for consistency, not just in MCP files.
@@ -43,6 +45,7 @@ codebase for consistency, not just in MCP files.
 - **MCP tool results**: return `{ content: [{ type: 'text', text: '...' }] }`
 
 ### Always use `.ts` import extensions
+
 Source files use `.ts` extensions in all relative imports:
 
 ```typescript
@@ -100,9 +103,9 @@ Requires Node 26+.
 Both entry points follow the same factory chain — no DI container:
 
 ```typescript
-await loadProjectEnv();                            // loads .env from process.cwd(), if present
-const config = await loadProjectConfig();          // loads .tidal-cli.json from process.cwd(), if present
-await initAuth();                                  // reads env vars, throws on missing
+await loadProjectEnv(); // loads .env from process.cwd(), if present
+const config = await loadProjectConfig(); // loads .tidal-cli.json from process.cwd(), if present
+await initAuth(); // reads env vars, throws on missing
 const apiClient = createAPIClient(credentialsProvider);
 const apiService = createTidalApiService(apiClient);
 const searchController = new SearchController(apiService, config);

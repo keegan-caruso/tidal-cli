@@ -79,13 +79,16 @@ export class ProfileController {
     ]);
 
     // Build artist summary (count tracks and albums per artist)
-    const artistStats = new Map<string, {
-      id: string;
-      name: string;
-      trackCount: number;
-      albumCount: number;
-      followedAt?: string;
-    }>();
+    const artistStats = new Map<
+      string,
+      {
+        id: string;
+        name: string;
+        trackCount: number;
+        albumCount: number;
+        followedAt?: string;
+      }
+    >();
 
     // Count tracks per artist
     for (const { item: track } of tracksResult.items) {
@@ -139,7 +142,9 @@ export class ProfileController {
 
     // Sort artists by total saved content
     const topArtists: ArtistSummary[] = Array.from(artistStats.values())
-      .sort((a, b) => (b.trackCount + b.albumCount) - (a.trackCount + a.albumCount))
+      .sort(
+        (a, b) => b.trackCount + b.albumCount - (a.trackCount + a.albumCount),
+      )
       .slice(0, 20)
       .map((a) => ({
         id: a.id,
@@ -150,21 +155,25 @@ export class ProfileController {
       }));
 
     // Recent tracks (top 10)
-    const recentTracks: TrackSummary[] = tracksResult.items.slice(0, 10).map(({ item, addedAt }) => ({
-      id: item.id,
-      title: item.title,
-      artistNames: item.artists.map((a) => a.name).join(', '),
-      addedAt,
-    }));
+    const recentTracks: TrackSummary[] = tracksResult.items
+      .slice(0, 10)
+      .map(({ item, addedAt }) => ({
+        id: item.id,
+        title: item.title,
+        artistNames: item.artists.map((a) => a.name).join(', '),
+        addedAt,
+      }));
 
     // Recent albums (top 10)
-    const recentAlbums: AlbumSummary[] = albumsResult.items.slice(0, 10).map(({ item, addedAt }) => ({
-      id: item.id,
-      title: item.title,
-      artistNames: item.artists.map((a) => a.name).join(', '),
-      releaseDate: item.releaseDate,
-      addedAt,
-    }));
+    const recentAlbums: AlbumSummary[] = albumsResult.items
+      .slice(0, 10)
+      .map(({ item, addedAt }) => ({
+        id: item.id,
+        title: item.title,
+        artistNames: item.artists.map((a) => a.name).join(', '),
+        releaseDate: item.releaseDate,
+        addedAt,
+      }));
 
     // Mixes summary
     const mixesAvailable: MixSummary[] = [];

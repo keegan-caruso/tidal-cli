@@ -1,6 +1,13 @@
 import { Command } from 'commander';
-import type { UserController, CollectionResult } from '../../controllers/user.ts';
-import type { CollectionType, CollectionSort, CollectionItem } from '../../domain/user.ts';
+import type {
+  UserController,
+  CollectionResult,
+} from '../../controllers/user.ts';
+import type {
+  CollectionType,
+  CollectionSort,
+  CollectionItem,
+} from '../../domain/user.ts';
 import type { Track, Album, Artist, Playlist } from '../../domain/media.ts';
 import { formatCliError, parseLimitOption } from '../utils.ts';
 
@@ -54,11 +61,14 @@ export function formatCliCollectionResult(result: CollectionResult): string {
   const lines: string[] = [];
 
   const typeLabel = formatCollectionTypeLabel(result.type);
-  const sortLabel = result.sort === '-addedAt' ? 'newest first' : 'oldest first';
+  const sortLabel =
+    result.sort === '-addedAt' ? 'newest first' : 'oldest first';
 
   lines.push('');
   lines.push(`  ${typeLabel}`);
-  lines.push(`  ${result.tracks.length + result.albums.length + result.artists.length + result.playlists.length} items, ${sortLabel}`);
+  lines.push(
+    `  ${result.tracks.length + result.albums.length + result.artists.length + result.playlists.length} items, ${sortLabel}`,
+  );
   lines.push('');
 
   switch (result.type) {
@@ -114,14 +124,24 @@ function appendCollectionTracks(
   items: CollectionItem<Track>[],
 ): void {
   // Calculate column widths (minimum is header length)
-  const maxTitleLen = Math.min(45, Math.max(5, ...items.map(({ item }) => {
-    const explicit = item.explicit ? ' [E]' : '';
-    return (item.title + explicit).length;
-  })));
+  const maxTitleLen = Math.min(
+    45,
+    Math.max(
+      5,
+      ...items.map(({ item }) => {
+        const explicit = item.explicit ? ' [E]' : '';
+        return (item.title + explicit).length;
+      }),
+    ),
+  );
 
   // Header
-  lines.push(`  ${'#'.padEnd(4)} ${'Title'.padEnd(maxTitleLen)} ${'Time'.padEnd(6)} ${'Added'.padEnd(12)} URL`);
-  lines.push(`  ${'─'.repeat(4)} ${'─'.repeat(maxTitleLen)} ${'─'.repeat(6)} ${'─'.repeat(12)} ${'─'.repeat(30)}`);
+  lines.push(
+    `  ${'#'.padEnd(4)} ${'Title'.padEnd(maxTitleLen)} ${'Time'.padEnd(6)} ${'Added'.padEnd(12)} URL`,
+  );
+  lines.push(
+    `  ${'─'.repeat(4)} ${'─'.repeat(maxTitleLen)} ${'─'.repeat(6)} ${'─'.repeat(12)} ${'─'.repeat(30)}`,
+  );
 
   items.forEach(({ item: t, addedAt }, index) => {
     const num = String(index + 1).padEnd(4);
@@ -138,13 +158,23 @@ function appendCollectionAlbums(
   lines: string[],
   items: CollectionItem<Album>[],
 ): void {
-  const maxTitleLen = Math.min(45, Math.max(5, ...items.map(({ item }) => {
-    const explicit = item.explicit ? ' [E]' : '';
-    return (item.title + explicit).length;
-  })));
+  const maxTitleLen = Math.min(
+    45,
+    Math.max(
+      5,
+      ...items.map(({ item }) => {
+        const explicit = item.explicit ? ' [E]' : '';
+        return (item.title + explicit).length;
+      }),
+    ),
+  );
 
-  lines.push(`  ${'#'.padEnd(4)} ${'Album'.padEnd(maxTitleLen)} ${'Year'.padEnd(6)} ${'Added'.padEnd(12)} URL`);
-  lines.push(`  ${'─'.repeat(4)} ${'─'.repeat(maxTitleLen)} ${'─'.repeat(6)} ${'─'.repeat(12)} ${'─'.repeat(30)}`);
+  lines.push(
+    `  ${'#'.padEnd(4)} ${'Album'.padEnd(maxTitleLen)} ${'Year'.padEnd(6)} ${'Added'.padEnd(12)} URL`,
+  );
+  lines.push(
+    `  ${'─'.repeat(4)} ${'─'.repeat(maxTitleLen)} ${'─'.repeat(6)} ${'─'.repeat(12)} ${'─'.repeat(30)}`,
+  );
 
   items.forEach(({ item: a, addedAt }, index) => {
     const num = String(index + 1).padEnd(4);
@@ -161,10 +191,17 @@ function appendCollectionArtists(
   lines: string[],
   items: CollectionItem<Artist>[],
 ): void {
-  const maxNameLen = Math.min(45, Math.max(6, ...items.map(({ item }) => item.name.length)));
+  const maxNameLen = Math.min(
+    45,
+    Math.max(6, ...items.map(({ item }) => item.name.length)),
+  );
 
-  lines.push(`  ${'#'.padEnd(4)} ${'Artist'.padEnd(maxNameLen)} ${'Followed'.padEnd(12)} URL`);
-  lines.push(`  ${'─'.repeat(4)} ${'─'.repeat(maxNameLen)} ${'─'.repeat(12)} ${'─'.repeat(30)}`);
+  lines.push(
+    `  ${'#'.padEnd(4)} ${'Artist'.padEnd(maxNameLen)} ${'Followed'.padEnd(12)} URL`,
+  );
+  lines.push(
+    `  ${'─'.repeat(4)} ${'─'.repeat(maxNameLen)} ${'─'.repeat(12)} ${'─'.repeat(30)}`,
+  );
 
   items.forEach(({ item: a, addedAt }, index) => {
     const num = String(index + 1).padEnd(4);
@@ -179,10 +216,17 @@ function appendCollectionPlaylists(
   lines: string[],
   items: CollectionItem<Playlist>[],
 ): void {
-  const maxNameLen = Math.min(40, Math.max(8, ...items.map(({ item }) => item.name.length)));
+  const maxNameLen = Math.min(
+    40,
+    Math.max(8, ...items.map(({ item }) => item.name.length)),
+  );
 
-  lines.push(`  ${'#'.padEnd(4)} ${'Playlist'.padEnd(maxNameLen)} ${'Tracks'.padEnd(8)} ${'Duration'.padEnd(10)} ${'Added'.padEnd(12)} URL`);
-  lines.push(`  ${'─'.repeat(4)} ${'─'.repeat(maxNameLen)} ${'─'.repeat(8)} ${'─'.repeat(10)} ${'─'.repeat(12)} ${'─'.repeat(30)}`);
+  lines.push(
+    `  ${'#'.padEnd(4)} ${'Playlist'.padEnd(maxNameLen)} ${'Tracks'.padEnd(8)} ${'Duration'.padEnd(10)} ${'Added'.padEnd(12)} URL`,
+  );
+  lines.push(
+    `  ${'─'.repeat(4)} ${'─'.repeat(maxNameLen)} ${'─'.repeat(8)} ${'─'.repeat(10)} ${'─'.repeat(12)} ${'─'.repeat(30)}`,
+  );
 
   items.forEach(({ item: p, addedAt }, index) => {
     const num = String(index + 1).padEnd(4);
@@ -206,10 +250,9 @@ function formatAddedAt(isoDate: string): string {
     return date.toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      year: 'numeric'
+      year: 'numeric',
     });
   } catch {
     return isoDate;
   }
 }
-

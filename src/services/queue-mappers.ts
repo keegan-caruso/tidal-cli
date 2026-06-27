@@ -3,8 +3,10 @@ import type { PlayQueue, QueueItem, RepeatMode } from '../domain/queue.ts';
 import type { Track } from '../domain/media.ts';
 import { createIncludedIndex, mapTrack } from './tidal-mappers.ts';
 
-type PlayQueueSingleDoc = components['schemas']['PlayQueues_Single_Resource_Data_Document'];
-type PlayQueueMultiDoc = components['schemas']['PlayQueues_Multi_Resource_Data_Document'];
+type PlayQueueSingleDoc =
+  components['schemas']['PlayQueues_Single_Resource_Data_Document'];
+type PlayQueueMultiDoc =
+  components['schemas']['PlayQueues_Multi_Resource_Data_Document'];
 type PlayQueueResource = components['schemas']['PlayQueues_Resource_Object'];
 type IncludedResource = components['schemas']['Included'][number];
 
@@ -23,7 +25,9 @@ export function mapPlayQueueResponse(doc: PlayQueueSingleDoc): PlayQueueResult {
   };
 }
 
-export function mapPlayQueuesResponse(doc: PlayQueueMultiDoc): PlayQueuesResult {
+export function mapPlayQueuesResponse(
+  doc: PlayQueueMultiDoc,
+): PlayQueuesResult {
   const index = createIncludedIndex(doc.included ?? []);
   return {
     queues: doc.data.map((q) => mapPlayQueue(q, index)),
@@ -61,7 +65,8 @@ function mapRepeatMode(mode?: 'NONE' | 'ONE' | 'BATCH'): RepeatMode {
 }
 
 function mapCurrentItem(
-  data: components['schemas']['PlayQueues_Current_Resource_Identifier'] | undefined,
+  data:
+    components['schemas']['PlayQueues_Current_Resource_Identifier'] | undefined,
   index: Map<string, IncludedResource>,
 ): QueueItem | undefined {
   if (data == null) return undefined;
@@ -77,7 +82,12 @@ function mapCurrentItem(
 }
 
 function mapQueueItems(
-  data: Array<components['schemas']['PlayQueues_Future_Resource_Identifier'] | components['schemas']['PlayQueues_Past_Resource_Identifier']> | undefined,
+  data:
+    | (
+        | components['schemas']['PlayQueues_Future_Resource_Identifier']
+        | components['schemas']['PlayQueues_Past_Resource_Identifier']
+      )[]
+    | undefined,
   index: Map<string, IncludedResource>,
 ): QueueItem[] {
   if (data == null) return [];
@@ -103,10 +113,15 @@ function getTrackFromIndex(
   const key = `tracks:${trackId}`;
   const resource = index.get(key);
 
-  if (resource == null || resource.type !== 'tracks') return undefined;
+  if (resource?.type !== 'tracks') return undefined;
 
-  const trackResource = resource as components['schemas']['Tracks_Resource_Object'];
+  const trackResource = resource;
   if (trackResource.attributes == null) return undefined;
 
-  return mapTrack(trackResource.id, trackResource.attributes, trackResource, index);
+  return mapTrack(
+    trackResource.id,
+    trackResource.attributes,
+    trackResource,
+    index,
+  );
 }

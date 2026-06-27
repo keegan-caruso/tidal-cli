@@ -4,7 +4,9 @@ export const getListeningProfileToolSchema = {
   forceRefresh: z
     .boolean()
     .optional()
-    .describe('Set to true to bypass cache and generate a fresh profile. Default: false (uses cached profile if available)'),
+    .describe(
+      'Set to true to bypass cache and generate a fresh profile. Default: false (uses cached profile if available)',
+    ),
 };
 
 export type GetListeningProfileToolInput = {
@@ -28,9 +30,7 @@ export type GetSimilarArtistsToolInput = {
 };
 
 export const getSimilarTracksToolSchema = {
-  trackId: z
-    .string()
-    .describe('The Tidal track ID to find similar tracks for'),
+  trackId: z.string().describe('The Tidal track ID to find similar tracks for'),
   countryCode: z
     .string()
     .length(2)
@@ -44,9 +44,7 @@ export type GetSimilarTracksToolInput = {
 };
 
 export const getSimilarAlbumsToolSchema = {
-  albumId: z
-    .string()
-    .describe('The Tidal album ID to find similar albums for'),
+  albumId: z.string().describe('The Tidal album ID to find similar albums for'),
   countryCode: z
     .string()
     .length(2)
@@ -60,9 +58,7 @@ export type GetSimilarAlbumsToolInput = {
 };
 
 export const getArtistRadioToolSchema = {
-  artistId: z
-    .string()
-    .describe('The Tidal artist ID to get radio tracks for'),
+  artistId: z.string().describe('The Tidal artist ID to get radio tracks for'),
   countryCode: z
     .string()
     .length(2)

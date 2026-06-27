@@ -41,7 +41,7 @@ function mapMixesResponse(doc: { included?: IncludedResource[] }): MixesResult {
 
   for (const resource of included) {
     if (resource.type === 'playlists') {
-      const r = resource as components['schemas']['Playlists_Resource_Object'];
+      const r = resource;
       if (r.attributes != null) {
         playlists.push(mapPlaylist(r.id, r.attributes));
       }
@@ -94,7 +94,7 @@ export function mapCollectionTracksResponse(
 
   return {
     items,
-    cursor: doc.links?.next ? extractCursor(doc.links.next) : undefined,
+    cursor: doc.links.next ? extractCursor(doc.links.next) : undefined,
   };
 }
 
@@ -123,7 +123,7 @@ export function mapCollectionAlbumsResponse(
 
   return {
     items,
-    cursor: doc.links?.next ? extractCursor(doc.links.next) : undefined,
+    cursor: doc.links.next ? extractCursor(doc.links.next) : undefined,
   };
 }
 
@@ -151,7 +151,7 @@ export function mapCollectionArtistsResponse(
 
   return {
     items,
-    cursor: doc.links?.next ? extractCursor(doc.links.next) : undefined,
+    cursor: doc.links.next ? extractCursor(doc.links.next) : undefined,
   };
 }
 
@@ -166,7 +166,8 @@ export function mapCollectionPlaylistsResponse(
     if (item.type === 'playlists') {
       const resource = findResource(included, 'playlists', item.id);
       if (resource != null) {
-        const r = resource as components['schemas']['Playlists_Resource_Object'];
+        const r =
+          resource as components['schemas']['Playlists_Resource_Object'];
         if (r.attributes != null) {
           items.push({
             item: mapPlaylist(r.id, r.attributes),
@@ -179,7 +180,7 @@ export function mapCollectionPlaylistsResponse(
 
   return {
     items,
-    cursor: doc.links?.next ? extractCursor(doc.links.next) : undefined,
+    cursor: doc.links.next ? extractCursor(doc.links.next) : undefined,
   };
 }
 

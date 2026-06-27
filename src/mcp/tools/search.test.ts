@@ -1,8 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import {
-  createSearchToolHandler,
-} from './search.ts';
+import { createSearchToolHandler } from './search.ts';
 import {
   createGetAlbumToolHandler,
   createGetArtistToolHandler,
@@ -26,7 +24,10 @@ const emptyResult: SearchResult = {
 
 describe('formatSearchResult', () => {
   it('returns JSON for empty result', () => {
-    assert.equal(formatSearchResult(emptyResult), JSON.stringify(emptyResult, null, 2));
+    assert.equal(
+      formatSearchResult(emptyResult),
+      JSON.stringify(emptyResult, null, 2),
+    );
   });
 
   it('includes "Did you mean" when present', () => {

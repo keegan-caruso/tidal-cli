@@ -55,7 +55,9 @@ export class QueueController {
     if (queues.length > 0) {
       // Return the most recently modified queue
       const sorted = [...queues].sort(
-        (a, b) => new Date(b.lastModifiedAt).getTime() - new Date(a.lastModifiedAt).getTime(),
+        (a, b) =>
+          new Date(b.lastModifiedAt).getTime() -
+          new Date(a.lastModifiedAt).getTime(),
       );
       return { queue: sorted[0] };
     }
@@ -86,7 +88,10 @@ export class QueueController {
   /**
    * Update queue settings (repeat mode, shuffle).
    */
-  async updateQueue(queueId: string, options: UpdateQueueOptions): Promise<void> {
+  async updateQueue(
+    queueId: string,
+    options: UpdateQueueOptions,
+  ): Promise<void> {
     await requireUserAuth();
     validateQueueId(queueId);
 
@@ -138,7 +143,11 @@ export class QueueController {
   /**
    * Skip to a specific track in the queue.
    */
-  async skipTo(queueId: string, trackId: string, itemId: string): Promise<void> {
+  async skipTo(
+    queueId: string,
+    trackId: string,
+    itemId: string,
+  ): Promise<void> {
     await requireUserAuth();
     validateQueueId(queueId);
     await this.apiService.setCurrentTrack(queueId, trackId, itemId);

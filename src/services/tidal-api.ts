@@ -446,7 +446,10 @@ export class TidalApiService {
               type: 'playQueues',
               id: queueId,
               attributes: {
-                repeat: options.repeat != null ? repeatMap[options.repeat] : undefined,
+                repeat:
+                  options.repeat != null
+                    ? repeatMap[options.repeat]
+                    : undefined,
                 shuffled: options.shuffled,
               },
             },

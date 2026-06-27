@@ -68,8 +68,7 @@ function formatMixTypeLabel(type: MixType): string {
 
 function appendPlaylists(lines: string[], playlists: Playlist[]): void {
   for (const p of playlists) {
-    const count =
-      p.numberOfItems != null ? ` - ${p.numberOfItems} tracks` : '';
+    const count = p.numberOfItems != null ? ` - ${p.numberOfItems} tracks` : '';
     const duration = p.durationText != null ? ` - ${p.durationText}` : '';
     lines.push(`  ${p.name}${count}${duration} - ${p.url}`);
   }

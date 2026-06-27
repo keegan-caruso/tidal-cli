@@ -10,14 +10,16 @@ import type {
 import { jsonToolResult } from '../format.ts';
 
 // Listening Profile Tool
-export const getListeningProfileToolName = 'tidal_get_listening_profile' as const;
-export const getListeningProfileToolDescription =
-  `Get a comprehensive summary of the user's music taste and listening profile (requires login).
+export const getListeningProfileToolName =
+  'tidal_get_listening_profile' as const;
+export const getListeningProfileToolDescription = `Get a comprehensive summary of the user's music taste and listening profile (requires login).
 Returns: top artists (by saved content), recent tracks/albums, available personalized mixes, and collection stats.
 Results are cached for 24 hours. Use forceRefresh=true to generate a fresh profile.
 This is the best starting point for making personalized recommendations.`;
 
-export function createGetListeningProfileToolHandler(controller: ProfileController) {
+export function createGetListeningProfileToolHandler(
+  controller: ProfileController,
+) {
   return async (input: GetListeningProfileToolInput) => {
     const result = await controller.getListeningProfile({
       forceRefresh: input.forceRefresh,
@@ -39,7 +41,9 @@ export const getSimilarArtistsToolName = 'tidal_get_similar_artists' as const;
 export const getSimilarArtistsToolDescription =
   'Find artists similar to a given artist. Useful for discovering new music based on artists the user likes.';
 
-export function createGetSimilarArtistsToolHandler(apiService: TidalApiService) {
+export function createGetSimilarArtistsToolHandler(
+  apiService: TidalApiService,
+) {
   return async (input: GetSimilarArtistsToolInput) => {
     const result = await apiService.getSimilarArtists(
       input.artistId,

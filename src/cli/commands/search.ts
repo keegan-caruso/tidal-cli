@@ -2,12 +2,7 @@ import { createInterface } from 'node:readline/promises';
 import { stdin as input, stderr as output } from 'node:process';
 import { Command } from 'commander';
 import type { SearchController } from '../../controllers/search.ts';
-import type {
-  Album,
-  Artist,
-  Playlist,
-  Track,
-} from '../../domain/media.ts';
+import type { Album, Artist, Playlist, Track } from '../../domain/media.ts';
 import type { SearchResult, SearchType } from '../../domain/search.ts';
 import { NoOpenableResultError } from '../../domain/errors.ts';
 import { formatCliError, openUrl, parseLimitOption } from '../utils.ts';
@@ -152,8 +147,7 @@ function appendPlaylists(lines: string[], playlists: Playlist[]): void {
 
   addSection(lines, `Playlists (${playlists.length})`);
   for (const p of playlists) {
-    const count =
-      p.numberOfItems != null ? ` - ${p.numberOfItems} tracks` : '';
+    const count = p.numberOfItems != null ? ` - ${p.numberOfItems} tracks` : '';
     const duration = p.durationText != null ? ` - ${p.durationText}` : '';
     lines.push(`  ${p.name} - ${p.playlistType}${count}${duration} - ${p.url}`);
   }
@@ -175,7 +169,9 @@ async function openSelectedResult(result: SearchResult): Promise<void> {
   }
 
   const selected =
-    openable.length === 1 ? openable[0] : await promptForOpenableResult(openable);
+    openable.length === 1
+      ? openable[0]
+      : await promptForOpenableResult(openable);
 
   if (selected == null) {
     throw new NoOpenableResultError();
@@ -210,4 +206,3 @@ async function promptForOpenableResult(
     rl.close();
   }
 }
-

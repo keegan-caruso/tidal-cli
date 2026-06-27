@@ -38,12 +38,12 @@ export function createFileStorage(): StorageAdapter {
       try {
         const content = await readFile(TOKENS_FILE, 'utf-8');
         const data = JSON.parse(content) as Record<string, string>;
-        delete data[key];
+        const { [key]: _, ...rest } = data;
 
-        if (Object.keys(data).length === 0) {
+        if (Object.keys(rest).length === 0) {
           await unlink(TOKENS_FILE);
         } else {
-          await writeFile(TOKENS_FILE, JSON.stringify(data, null, 2), 'utf-8');
+          await writeFile(TOKENS_FILE, JSON.stringify(rest, null, 2), 'utf-8');
         }
       } catch {
         // File doesn't exist, nothing to remove
@@ -73,20 +73,22 @@ export async function setUserLoggedIn(loggedIn: boolean): Promise<void> {
     // File doesn't exist or is invalid, start fresh
   }
 
+  let finalData: Record<string, string>;
   if (loggedIn) {
-    data[USER_LOGIN_KEY] = 'true';
+    finalData = { ...data, [USER_LOGIN_KEY]: 'true' };
   } else {
-    delete data[USER_LOGIN_KEY];
+    const { [USER_LOGIN_KEY]: _, ...rest } = data;
+    finalData = rest;
   }
 
-  if (Object.keys(data).length === 0) {
+  if (Object.keys(finalData).length === 0) {
     try {
       await unlink(TOKENS_FILE);
     } catch {
       // Ignore
     }
   } else {
-    await writeFile(TOKENS_FILE, JSON.stringify(data, null, 2), 'utf-8');
+    await writeFile(TOKENS_FILE, JSON.stringify(finalData, null, 2), 'utf-8');
     await chmod(TOKENS_FILE, 0o600);
   }
 }

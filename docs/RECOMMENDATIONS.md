@@ -6,30 +6,30 @@ This document describes how an AI agent can use the Tidal CLI MCP tools to analy
 
 ### Profile & History
 
-| Tool | Purpose |
-|------|---------|
+| Tool                          | Purpose                                                      |
+| ----------------------------- | ------------------------------------------------------------ |
 | `tidal_get_listening_profile` | Get comprehensive summary of user's music taste (cached 24h) |
-| `tidal_get_collection` | Get saved tracks, albums, artists, or playlists |
-| `tidal_get_mixes` | Get Tidal's AI-generated personalized playlists |
-| `tidal_get_queue` | See recently played tracks (from queue history) |
+| `tidal_get_collection`        | Get saved tracks, albums, artists, or playlists              |
+| `tidal_get_mixes`             | Get Tidal's AI-generated personalized playlists              |
+| `tidal_get_queue`             | See recently played tracks (from queue history)              |
 
 ### Discovery
 
-| Tool | Purpose |
-|------|---------|
-| `tidal_get_similar_artists` | Find artists similar to a given artist |
-| `tidal_get_similar_tracks` | Find tracks similar to a given track |
-| `tidal_get_similar_albums` | Find albums similar to a given album |
-| `tidal_get_artist_radio` | Get a radio-style mix based on an artist |
-| `tidal_search` | Search for any music by name |
+| Tool                        | Purpose                                  |
+| --------------------------- | ---------------------------------------- |
+| `tidal_get_similar_artists` | Find artists similar to a given artist   |
+| `tidal_get_similar_tracks`  | Find tracks similar to a given track     |
+| `tidal_get_similar_albums`  | Find albums similar to a given album     |
+| `tidal_get_artist_radio`    | Get a radio-style mix based on an artist |
+| `tidal_search`              | Search for any music by name             |
 
 ### Playback
 
-| Tool | Purpose |
-|------|---------|
-| `tidal_add_to_queue` | Add recommended tracks to play queue |
-| `tidal_get_queue` | View current queue state |
-| `tidal_clear_queue` | Clear the queue before adding new recommendations |
+| Tool                 | Purpose                                           |
+| -------------------- | ------------------------------------------------- |
+| `tidal_add_to_queue` | Add recommended tracks to play queue              |
+| `tidal_get_queue`    | View current queue state                          |
+| `tidal_clear_queue`  | Clear the queue before adding new recommendations |
 
 ---
 
@@ -45,6 +45,7 @@ Input: {}
 ```
 
 **Response includes:**
+
 - `topArtists` — Artists ranked by how much content the user has saved (tracks + albums)
 - `recentTracks` — Most recently saved tracks (last 10)
 - `recentAlbums` — Most recently saved albums (last 10)
@@ -66,6 +67,7 @@ From the profile, identify:
 Based on what you learned, use discovery tools:
 
 #### Option A: Similar Artists
+
 For each top artist, find similar artists:
 
 ```
@@ -76,6 +78,7 @@ Input: { "artistId": "3520813" }
 This returns artists with similar sound/genre that the user might not know.
 
 #### Option B: Similar Tracks
+
 For a recently saved track, find similar tracks:
 
 ```
@@ -86,6 +89,7 @@ Input: { "trackId": "75413016" }
 Great for building "more like this" recommendations.
 
 #### Option C: Artist Radio
+
 Get a pre-built mix based on an artist:
 
 ```
@@ -96,6 +100,7 @@ Input: { "artistId": "3520813" }
 Returns a mix of tracks by the artist and similar artists — good for immediate playback.
 
 #### Option D: Tidal's Mixes
+
 Use Tidal's own AI recommendations:
 
 ```
@@ -104,6 +109,7 @@ Input: { "type": "discovery" }
 ```
 
 Types available:
+
 - `daily` — Daily mixes based on listening history
 - `discovery` — New music recommendations
 - `new-releases` — New releases from followed artists
@@ -111,6 +117,7 @@ Types available:
 ### Step 4: Present Recommendations
 
 When presenting recommendations to the user, include:
+
 - Track/artist/album name
 - Why you're recommending it (e.g., "Similar to Radiohead, one of your top artists")
 - The Tidal URL for easy access
@@ -136,6 +143,7 @@ Use `position: "next"` to play immediately after the current track, or `position
 **User:** "Recommend some new music based on what I've been listening to"
 
 **Agent actions:**
+
 1. Call `tidal_get_listening_profile` to understand their taste
 2. Identify top 3 artists from `topArtists`
 3. Call `tidal_get_similar_artists` for each top artist
@@ -145,6 +153,7 @@ Use `position: "next"` to play immediately after the current track, or `position
 **User:** "I want to hear something like that track I saved yesterday"
 
 **Agent actions:**
+
 1. Call `tidal_get_listening_profile` and check `recentTracks`
 2. Find the track from yesterday
 3. Call `tidal_get_similar_tracks` with that track ID
@@ -154,6 +163,7 @@ Use `position: "next"` to play immediately after the current track, or `position
 **User:** "Just play me some music I'd like"
 
 **Agent actions:**
+
 1. Call `tidal_get_listening_profile` and pick a top artist
 2. Call `tidal_get_artist_radio` for that artist
 3. Call `tidal_add_to_queue` with the radio tracks
@@ -170,6 +180,7 @@ The listening profile is cached to `~/.tidal-cli/profile-cache.json` for 24 hour
 - **Force refresh**: Use `forceRefresh: true` to bypass cache
 
 The response includes a `_meta` object:
+
 ```json
 {
   "_meta": {
@@ -269,13 +280,15 @@ The response includes a `_meta` object:
 Get a comprehensive summary of the user's music taste.
 
 **Input:**
+
 ```json
 {
-  "forceRefresh": false  // Set true to bypass 24-hour cache
+  "forceRefresh": false // Set true to bypass 24-hour cache
 }
 ```
 
 **Output:**
+
 ```json
 {
   "totalSavedTracks": 342,
@@ -324,14 +337,16 @@ Get a comprehensive summary of the user's music taste.
 ### tidal_get_similar_artists
 
 **Input:**
+
 ```json
 {
   "artistId": "3520813",
-  "countryCode": "US"  // Optional, defaults to US
+  "countryCode": "US" // Optional, defaults to US
 }
 ```
 
 **Output:**
+
 ```json
 {
   "artists": [
@@ -348,6 +363,7 @@ Get a comprehensive summary of the user's music taste.
 ### tidal_get_similar_tracks
 
 **Input:**
+
 ```json
 {
   "trackId": "75413016",
@@ -356,6 +372,7 @@ Get a comprehensive summary of the user's music taste.
 ```
 
 **Output:**
+
 ```json
 {
   "tracks": [
@@ -375,6 +392,7 @@ Get a comprehensive summary of the user's music taste.
 ### tidal_get_artist_radio
 
 **Input:**
+
 ```json
 {
   "artistId": "3520813",
@@ -387,15 +405,17 @@ Get a comprehensive summary of the user's music taste.
 ### tidal_add_to_queue
 
 **Input:**
+
 ```json
 {
   "trackIds": ["12345", "67890"],
-  "position": "next",  // "next" or "last"
-  "queueId": null      // Optional, uses active queue if not specified
+  "position": "next", // "next" or "last"
+  "queueId": null // Optional, uses active queue if not specified
 }
 ```
 
 **Output:**
+
 ```json
 {
   "success": true,

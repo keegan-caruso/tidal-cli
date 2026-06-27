@@ -18,14 +18,16 @@ import {
 function createInMemoryStorage(): StorageAdapter {
   const store = new Map<string, string>();
   return {
-    async load(key: string): Promise<string | null> {
-      return store.get(key) ?? null;
+    load(key: string): Promise<string | null> {
+      return Promise.resolve(store.get(key) ?? null);
     },
-    async save(key: string, value: string): Promise<void> {
+    save(key: string, value: string): Promise<void> {
       store.set(key, value);
+      return Promise.resolve();
     },
-    async remove(key: string): Promise<void> {
+    remove(key: string): Promise<void> {
       store.delete(key);
+      return Promise.resolve();
     },
   };
 }
@@ -116,7 +118,9 @@ export async function initUserAuth(): Promise<void> {
  */
 export async function startLogin(redirectUri: string): Promise<string> {
   if (!authInitialized) {
-    throw new DeviceLoginError('Auth not initialized. Call initUserAuth() first.');
+    throw new DeviceLoginError(
+      'Auth not initialized. Call initUserAuth() first.',
+    );
   }
 
   try {
@@ -132,7 +136,9 @@ export async function startLogin(redirectUri: string): Promise<string> {
  */
 export async function completeLogin(callbackQuery: string): Promise<void> {
   if (!authInitialized) {
-    throw new DeviceLoginError('Auth not initialized. Call initUserAuth() first.');
+    throw new DeviceLoginError(
+      'Auth not initialized. Call initUserAuth() first.',
+    );
   }
 
   try {

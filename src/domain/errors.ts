@@ -77,7 +77,9 @@ export class NoOpenableResultError extends TidalCliError {
 }
 
 export class UserAuthRequiredError extends TidalCliError {
-  constructor(message = 'User login required. Run "tidal login" to authenticate.') {
+  constructor(
+    message = 'User login required. Run "tidal login" to authenticate.',
+  ) {
     super(message, 'USER_AUTH_REQUIRED');
     this.name = 'UserAuthRequiredError';
   }

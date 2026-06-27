@@ -12,31 +12,31 @@ import { jsonToolResult } from '../format.ts';
 
 export const getQueueToolName = 'tidal_get_queue' as const;
 export const getQueueToolDescription =
-  "Get the current play queue (requires login). Shows now playing, upcoming tracks, and recently played. If no queue ID provided, returns the active queue.";
+  'Get the current play queue (requires login). Shows now playing, upcoming tracks, and recently played. If no queue ID provided, returns the active queue.';
 
 export const listQueuesToolName = 'tidal_list_queues' as const;
 export const listQueuesToolDescription =
-  "List all play queues for the user (requires login).";
+  'List all play queues for the user (requires login).';
 
 export const addToQueueToolName = 'tidal_add_to_queue' as const;
 export const addToQueueToolDescription =
-  "Add tracks to the play queue (requires login). Can add to play next or at the end of the queue.";
+  'Add tracks to the play queue (requires login). Can add to play next or at the end of the queue.';
 
 export const removeFromQueueToolName = 'tidal_remove_from_queue' as const;
 export const removeFromQueueToolDescription =
-  "Remove a track from the play queue (requires login). Requires the itemId from the queue response.";
+  'Remove a track from the play queue (requires login). Requires the itemId from the queue response.';
 
 export const clearQueueToolName = 'tidal_clear_queue' as const;
 export const clearQueueToolDescription =
-  "Clear all upcoming tracks from the play queue (requires login). Does not affect the currently playing track.";
+  'Clear all upcoming tracks from the play queue (requires login). Does not affect the currently playing track.';
 
 export const skipToTrackToolName = 'tidal_skip_to_track' as const;
 export const skipToTrackToolDescription =
-  "Skip to a specific track in the queue (requires login). Makes the specified track the current track.";
+  'Skip to a specific track in the queue (requires login). Makes the specified track the current track.';
 
 export const updateQueueToolName = 'tidal_update_queue' as const;
 export const updateQueueToolDescription =
-  "Update queue settings like repeat mode and shuffle (requires login).";
+  'Update queue settings like repeat mode and shuffle (requires login).';
 
 export function createGetQueueToolHandler(controller: QueueController) {
   return async (input: GetQueueToolInput) => {

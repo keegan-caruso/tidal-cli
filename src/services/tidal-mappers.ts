@@ -36,16 +36,18 @@ export function mapSearchResponse(
 
   for (const resource of included) {
     if (resource.type === 'tracks') {
-      const r = resource as components['schemas']['Tracks_Resource_Object'];
-      if (r.attributes != null) tracks.push(mapTrack(r.id, r.attributes, r, index));
+      const r = resource;
+      if (r.attributes != null)
+        tracks.push(mapTrack(r.id, r.attributes, r, index));
     } else if (resource.type === 'albums') {
-      const r = resource as components['schemas']['Albums_Resource_Object'];
-      if (r.attributes != null) albums.push(mapAlbum(r.id, r.attributes, r, index));
+      const r = resource;
+      if (r.attributes != null)
+        albums.push(mapAlbum(r.id, r.attributes, r, index));
     } else if (resource.type === 'artists') {
-      const r = resource as components['schemas']['Artists_Resource_Object'];
+      const r = resource;
       if (r.attributes != null) artists.push(mapArtist(r.id, r.attributes));
     } else if (resource.type === 'playlists') {
-      const r = resource as components['schemas']['Playlists_Resource_Object'];
+      const r = resource;
       if (r.attributes != null) playlists.push(mapPlaylist(r.id, r.attributes));
     }
   }
@@ -185,8 +187,10 @@ function mapRelationshipSummaries(
   });
 }
 
-function getResourceDisplayName(resource?: IncludedResource): string | undefined {
-  if (resource == null || resource.attributes == null) return undefined;
+function getResourceDisplayName(
+  resource?: IncludedResource,
+): string | undefined {
+  if (resource?.attributes == null) return undefined;
 
   if (
     'title' in resource.attributes &&
@@ -215,9 +219,12 @@ function getResourceUrl(
       ? mapExternalLinks(attributes.externalLinks)
       : [];
 
-  if (type === 'tracks') return getCanonicalTidalUrl('track', id, externalLinks);
-  if (type === 'albums') return getCanonicalTidalUrl('album', id, externalLinks);
-  if (type === 'artists') return getCanonicalTidalUrl('artist', id, externalLinks);
+  if (type === 'tracks')
+    return getCanonicalTidalUrl('track', id, externalLinks);
+  if (type === 'albums')
+    return getCanonicalTidalUrl('album', id, externalLinks);
+  if (type === 'artists')
+    return getCanonicalTidalUrl('artist', id, externalLinks);
   if (type === 'playlists') {
     return getCanonicalTidalUrl('playlist', id, externalLinks);
   }

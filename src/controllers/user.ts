@@ -73,7 +73,9 @@ export class UserController {
     };
   }
 
-  async getCollection(options: CollectionOptions = {}): Promise<CollectionResult> {
+  async getCollection(
+    options: CollectionOptions = {},
+  ): Promise<CollectionResult> {
     await requireUserAuth();
 
     const resolved = this.resolveCollectionOptions(options);
@@ -90,22 +92,30 @@ export class UserController {
 
     switch (resolved.type) {
       case 'tracks': {
-        const response = await this.apiService.getCollectionTracks(resolved.sort);
+        const response = await this.apiService.getCollectionTracks(
+          resolved.sort,
+        );
         result.tracks = response.items.slice(0, resolved.limit);
         break;
       }
       case 'albums': {
-        const response = await this.apiService.getCollectionAlbums(resolved.sort);
+        const response = await this.apiService.getCollectionAlbums(
+          resolved.sort,
+        );
         result.albums = response.items.slice(0, resolved.limit);
         break;
       }
       case 'artists': {
-        const response = await this.apiService.getCollectionArtists(resolved.sort);
+        const response = await this.apiService.getCollectionArtists(
+          resolved.sort,
+        );
         result.artists = response.items.slice(0, resolved.limit);
         break;
       }
       case 'playlists': {
-        const response = await this.apiService.getCollectionPlaylists(resolved.sort);
+        const response = await this.apiService.getCollectionPlaylists(
+          resolved.sort,
+        );
         result.playlists = response.items.slice(0, resolved.limit);
         break;
       }
@@ -150,7 +160,9 @@ export class UserController {
 
 function validateMixType(type: MixType): void {
   if (!mixTypes.has(type)) {
-    throw new ValidationError('Mix type must be daily, discovery, or new-releases');
+    throw new ValidationError(
+      'Mix type must be daily, discovery, or new-releases',
+    );
   }
 }
 

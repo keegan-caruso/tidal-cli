@@ -13,44 +13,42 @@ const REDIRECT_URI = `http://localhost:${CALLBACK_PORT}/callback`;
 export function createLoginCommand(): Command {
   const cmd = new Command('login');
 
-  cmd
-    .description('Log in to Tidal with your account')
-    .action(async () => {
-      try {
-        const alreadyLoggedIn = await isUserLoggedIn();
-        if (alreadyLoggedIn) {
-          process.stdout.write('You are already logged in.\n');
-          return;
-        }
-
-        process.stdout.write('Starting login...\n\n');
-
-        // Start local server to receive callback FIRST
-        const { serverReady, callbackReceived, cleanup } = createCallbackServer();
-        await serverReady;
-
-        // Get the login URL
-        const loginUrl = await startLogin(REDIRECT_URI);
-
-        // Open browser
-        process.stdout.write('Opening browser for Tidal login...\n');
-        process.stdout.write(`If browser doesn't open, visit: ${loginUrl}\n\n`);
-        openUrl(loginUrl);
-
-        // Wait for callback
-        process.stdout.write('Waiting for login to complete...\n');
-        const query = await callbackReceived;
-        cleanup();
-
-        // Complete login
-        await completeLogin(query);
-
-        process.stdout.write('\nLogin successful!\n');
-      } catch (err) {
-        process.stderr.write(`${formatCliError(err)}\n`);
-        process.exit(1);
+  cmd.description('Log in to Tidal with your account').action(async () => {
+    try {
+      const alreadyLoggedIn = await isUserLoggedIn();
+      if (alreadyLoggedIn) {
+        process.stdout.write('You are already logged in.\n');
+        return;
       }
-    });
+
+      process.stdout.write('Starting login...\n\n');
+
+      // Start local server to receive callback FIRST
+      const { serverReady, callbackReceived, cleanup } = createCallbackServer();
+      await serverReady;
+
+      // Get the login URL
+      const loginUrl = await startLogin(REDIRECT_URI);
+
+      // Open browser
+      process.stdout.write('Opening browser for Tidal login...\n');
+      process.stdout.write(`If browser doesn't open, visit: ${loginUrl}\n\n`);
+      openUrl(loginUrl);
+
+      // Wait for callback
+      process.stdout.write('Waiting for login to complete...\n');
+      const query = await callbackReceived;
+      cleanup();
+
+      // Complete login
+      await completeLogin(query);
+
+      process.stdout.write('\nLogin successful!\n');
+    } catch (err) {
+      process.stderr.write(`${formatCliError(err)}\n`);
+      process.exit(1);
+    }
+  });
 
   return cmd;
 }
@@ -122,7 +120,9 @@ function createCallbackServer(): CallbackServer {
   });
 
   server.on('error', (err) => {
-    rejectCallback(new Error(`Failed to start callback server: ${err.message}`));
+    rejectCallback(
+      new Error(`Failed to start callback server: ${err.message}`),
+    );
   });
 
   server.listen(CALLBACK_PORT, '127.0.0.1', () => {
@@ -130,10 +130,13 @@ function createCallbackServer(): CallbackServer {
   });
 
   // Timeout after 5 minutes
-  const timeout = setTimeout(() => {
-    server.close();
-    rejectCallback(new Error('Login timed out. Please try again.'));
-  }, 5 * 60 * 1000);
+  const timeout = setTimeout(
+    () => {
+      server.close();
+      rejectCallback(new Error('Login timed out. Please try again.'));
+    },
+    5 * 60 * 1000,
+  );
 
   const cleanup = () => {
     clearTimeout(timeout);
@@ -142,4 +145,3 @@ function createCallbackServer(): CallbackServer {
 
   return { serverReady, callbackReceived, cleanup };
 }
-

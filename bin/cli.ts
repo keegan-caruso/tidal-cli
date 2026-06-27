@@ -1,7 +1,10 @@
 #!/usr/bin/env node
 import { program } from 'commander';
 import { initUserAuth, credentialsProvider } from '../src/services/auth.ts';
-import { createApiClient, createTidalApiService } from '../src/services/tidal-api.ts';
+import {
+  createApiClient,
+  createTidalApiService,
+} from '../src/services/tidal-api.ts';
 import { loadProjectConfig } from '../src/services/config.ts';
 import { loadProjectEnv } from '../src/services/env.ts';
 import { SearchController } from '../src/controllers/search.ts';
@@ -25,10 +28,7 @@ async function main(): Promise<void> {
   const userController = new UserController(apiService, config);
   const queueController = new QueueController(apiService);
 
-  program
-    .name('tidal')
-    .description('Tidal music API CLI')
-    .version('0.1.0');
+  program.name('tidal').description('Tidal music API CLI').version('0.1.0');
 
   program.addCommand(createSearchCommand(searchController));
   program.addCommand(createLoginCommand());

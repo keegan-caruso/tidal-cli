@@ -85,20 +85,24 @@ pnpm run dev:mcp
 ### Registered Tools
 
 **Search & Detail:**
+
 - `tidal_search` — Search for tracks, albums, artists, playlists
 - `tidal_get_track`, `tidal_get_album`, `tidal_get_artist`, `tidal_get_playlist`
 
 **User (requires login):**
+
 - `tidal_login_status` — Check if user is logged in
 - `tidal_get_collection` — Get saved tracks/albums/artists/playlists
 - `tidal_get_mixes` — Get personalized daily/discovery/new-release mixes
 
 **Recommendations (requires login):**
+
 - `tidal_get_listening_profile` — Comprehensive music taste summary (cached 24h)
 - `tidal_get_similar_artists`, `tidal_get_similar_tracks`, `tidal_get_similar_albums`
 - `tidal_get_artist_radio` — Radio-style mix based on an artist
 
 **Queue Management (requires login):**
+
 - `tidal_get_queue`, `tidal_list_queues` — View play queues
 - `tidal_add_to_queue`, `tidal_remove_from_queue`, `tidal_clear_queue`
 - `tidal_skip_to_track`, `tidal_update_queue`

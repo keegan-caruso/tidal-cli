@@ -1,6 +1,9 @@
 #!/usr/bin/env node
 import { initUserAuth, credentialsProvider } from '../src/services/auth.ts';
-import { createApiClient, createTidalApiService } from '../src/services/tidal-api.ts';
+import {
+  createApiClient,
+  createTidalApiService,
+} from '../src/services/tidal-api.ts';
 import { loadProjectConfig } from '../src/services/config.ts';
 import { loadProjectEnv } from '../src/services/env.ts';
 import { SearchController } from '../src/controllers/search.ts';
