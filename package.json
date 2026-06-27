@@ -16,6 +16,7 @@
     "dev:cli": "node --strip-types bin/cli.ts",
     "dev:mcp": "node --strip-types bin/mcp-server.ts",
     "test": "node --strip-types --test 'src/**/*.test.ts'",
+    "test:coverage": "node --strip-types --test --experimental-test-coverage 'src/**/*.test.ts'",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
