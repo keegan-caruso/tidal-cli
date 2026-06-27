@@ -1,15 +1,24 @@
 import { createAPIClient } from '@tidal-music/api';
-import type { components } from '@tidal-music/api';
 import type { CredentialsProvider } from '@tidal-music/common';
-import type {
-  SearchOptions,
-  SearchResult,
-  Track,
-  Album,
-  Artist,
-  Playlist,
-} from '../domain/types.ts';
-import { SearchError } from '../domain/errors.ts';
+import type { Album, Artist, Playlist, Track } from '../domain/media.ts';
+import type { ResolvedDetailOptions } from '../domain/detail.ts';
+import type { ResolvedSearchOptions, SearchResult } from '../domain/search.ts';
+import {
+  ApiError,
+  NetworkError,
+  RateLimitError,
+  SearchError,
+} from '../domain/errors.ts';
+import {
+  buildSearchIncludeList,
+  createIncludedIndex,
+  limitSearchResult,
+  mapAlbum,
+  mapArtist,
+  mapPlaylist,
+  mapSearchResponse,
+  mapTrack,
+} from './tidal-mappers.ts';
 
 export type ApiClient = ReturnType<typeof createAPIClient>;
 
@@ -30,128 +39,133 @@ export class TidalApiService {
     this.client = client;
   }
 
-  async search(options: SearchOptions): Promise<SearchResult> {
-    const include = buildIncludeList(options.type);
+  async search(options: ResolvedSearchOptions): Promise<SearchResult> {
+    const include = buildSearchIncludeList(options.type);
 
-    const { data, error } = await this.client.GET('/searchResults/{id}', {
-      params: {
-        path: { id: options.query },
-        query: {
-          include,
-          countryCode: options.countryCode ?? 'US',
-          explicitFilter: options.explicitFilter,
-        },
-      },
-    });
+    const { data } = await this.request(
+      () =>
+        this.client.GET('/searchResults/{id}', {
+          params: {
+            path: { id: options.query },
+            query: {
+              include,
+              countryCode: options.countryCode,
+              explicitFilter: options.explicitFilter,
+            },
+          },
+        }),
+      `Search failed for query "${options.query}"`,
+    );
 
-    if (error != null || data == null) {
-      throw new SearchError(
-        `Search failed for query "${options.query}"`,
-        error,
-      );
+    if (data == null) {
+      throw new SearchError(`Search failed for query "${options.query}"`);
     }
 
-    return mapSearchResponse(data);
+    return limitSearchResult(mapSearchResponse(data, options), options.limit);
   }
-}
 
-function buildIncludeList(type: SearchOptions['type']): string[] {
-  if (type === 'all') return ['tracks', 'albums', 'artists', 'playlists'];
-  return [type];
-}
+  async getTrack(options: ResolvedDetailOptions): Promise<Track> {
+    const { data } = await this.request(
+      () =>
+        this.client.GET('/tracks/{id}', {
+          params: {
+            path: { id: options.id },
+            query: {
+              countryCode: options.countryCode,
+              include: ['albums', 'artists'],
+            },
+          },
+        }),
+      `Failed to load track "${options.id}"`,
+    );
 
-type SearchDocument =
-  components['schemas']['SearchResults_Single_Resource_Data_Document'];
+    if (data?.data.attributes == null) {
+      throw new ApiError(`Track "${options.id}" was not found`, 404);
+    }
 
-function mapSearchResponse(doc: SearchDocument): SearchResult {
-  const included = doc.included ?? [];
-  const attrs = doc.data.attributes;
+    const index = createIncludedIndex(data.included ?? []);
+    return mapTrack(data.data.id, data.data.attributes, data.data, index);
+  }
 
-  const tracks: Track[] = [];
-  const albums: Album[] = [];
-  const artists: Artist[] = [];
-  const playlists: Playlist[] = [];
+  async getAlbum(options: ResolvedDetailOptions): Promise<Album> {
+    const { data } = await this.request(
+      () =>
+        this.client.GET('/albums/{id}', {
+          params: {
+            path: { id: options.id },
+            query: {
+              countryCode: options.countryCode,
+              include: ['artists'],
+            },
+          },
+        }),
+      `Failed to load album "${options.id}"`,
+    );
 
-  for (const resource of included) {
-    if (resource.type === 'tracks') {
-      const r = resource as components['schemas']['Tracks_Resource_Object'];
-      if (r.attributes != null) tracks.push(mapTrack(r.id, r.attributes));
-    } else if (resource.type === 'albums') {
-      const r = resource as components['schemas']['Albums_Resource_Object'];
-      if (r.attributes != null) albums.push(mapAlbum(r.id, r.attributes));
-    } else if (resource.type === 'artists') {
-      const r = resource as components['schemas']['Artists_Resource_Object'];
-      if (r.attributes != null) artists.push(mapArtist(r.id, r.attributes));
-    } else if (resource.type === 'playlists') {
-      const r = resource as components['schemas']['Playlists_Resource_Object'];
-      if (r.attributes != null)
-        playlists.push(mapPlaylist(r.id, r.attributes));
+    if (data?.data.attributes == null) {
+      throw new ApiError(`Album "${options.id}" was not found`, 404);
+    }
+
+    const index = createIncludedIndex(data.included ?? []);
+    return mapAlbum(data.data.id, data.data.attributes, data.data, index);
+  }
+
+  async getArtist(options: ResolvedDetailOptions): Promise<Artist> {
+    const { data } = await this.request(
+      () =>
+        this.client.GET('/artists/{id}', {
+          params: {
+            path: { id: options.id },
+            query: { countryCode: options.countryCode },
+          },
+        }),
+      `Failed to load artist "${options.id}"`,
+    );
+
+    if (data?.data.attributes == null) {
+      throw new ApiError(`Artist "${options.id}" was not found`, 404);
+    }
+
+    return mapArtist(data.data.id, data.data.attributes);
+  }
+
+  async getPlaylist(options: ResolvedDetailOptions): Promise<Playlist> {
+    const { data } = await this.request(
+      () =>
+        this.client.GET('/playlists/{id}', {
+          params: {
+            path: { id: options.id },
+            query: { countryCode: options.countryCode },
+          },
+        }),
+      `Failed to load playlist "${options.id}"`,
+    );
+
+    if (data?.data.attributes == null) {
+      throw new ApiError(`Playlist "${options.id}" was not found`, 404);
+    }
+
+    return mapPlaylist(data.data.id, data.data.attributes);
+  }
+
+  private async request<T>(
+    action: () => Promise<{ data?: T; error?: unknown; response: Response }>,
+    message: string,
+  ): Promise<{ data?: T }> {
+    try {
+      const { data, error, response } = await action();
+
+      if (error != null) {
+        if (response.status === 429) {
+          throw new RateLimitError(message, error);
+        }
+        throw new ApiError(message, response.status, error);
+      }
+
+      return { data };
+    } catch (err) {
+      if (err instanceof ApiError) throw err;
+      throw new NetworkError(message, err);
     }
   }
-
-  return {
-    tracks,
-    albums,
-    artists,
-    playlists,
-    didYouMean: attrs?.didYouMean,
-    trackingId: attrs?.trackingId ?? '',
-  };
-}
-
-function mapTrack(
-  id: string,
-  a: components['schemas']['Tracks_Attributes'],
-): Track {
-  return {
-    id,
-    title: a.title,
-    duration: a.duration,
-    explicit: a.explicit,
-    isrc: a.isrc,
-    popularity: a.popularity,
-    bpm: a.bpm,
-  };
-}
-
-function mapAlbum(
-  id: string,
-  a: components['schemas']['Albums_Attributes'],
-): Album {
-  return {
-    id,
-    title: a.title,
-    albumType: a.albumType,
-    duration: a.duration,
-    explicit: a.explicit,
-    numberOfItems: a.numberOfItems,
-    releaseDate: a.releaseDate,
-    popularity: a.popularity,
-  };
-}
-
-function mapArtist(
-  id: string,
-  a: components['schemas']['Artists_Attributes'],
-): Artist {
-  return {
-    id,
-    name: a.name,
-    popularity: a.popularity,
-    handle: a.handle,
-  };
-}
-
-function mapPlaylist(
-  id: string,
-  a: components['schemas']['Playlists_Attributes'],
-): Playlist {
-  return {
-    id,
-    name: a.name,
-    description: a.description,
-    playlistType: a.playlistType,
-    numberOfItems: a.numberOfItems,
-    duration: a.duration,
-  };
 }
