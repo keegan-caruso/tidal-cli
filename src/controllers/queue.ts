@@ -5,8 +5,8 @@ import type {
   AddToQueueOptions,
   UpdateQueueOptions,
 } from '../domain/queue.ts';
-import { UserAuthRequiredError, ValidationError, ApiError } from '../domain/errors.ts';
-import { isUserLoggedIn } from '../services/auth.ts';
+import { ValidationError } from '../domain/errors.ts';
+import { requireUserAuth } from './utils.ts';
 
 const repeatModes = new Set<RepeatMode>(['none', 'one', 'all']);
 
@@ -29,7 +29,7 @@ export class QueueController {
    * List all play queues for the current user.
    */
   async listQueues(): Promise<ListQueuesResult> {
-    await this.requireUserAuth();
+    await requireUserAuth();
     const result = await this.apiService.getPlayQueues();
     return { queues: result.queues };
   }
@@ -38,7 +38,7 @@ export class QueueController {
    * Get a specific play queue by ID.
    */
   async getQueue(queueId: string): Promise<GetQueueResult> {
-    await this.requireUserAuth();
+    await requireUserAuth();
     validateQueueId(queueId);
     const result = await this.apiService.getPlayQueue(queueId);
     return { queue: result.queue };
@@ -48,7 +48,7 @@ export class QueueController {
    * Get the active play queue (creates one if none exists).
    */
   async getOrCreateQueue(): Promise<GetQueueResult> {
-    await this.requireUserAuth();
+    await requireUserAuth();
 
     const { queues } = await this.apiService.getPlayQueues();
 
@@ -69,7 +69,7 @@ export class QueueController {
    * Create a new play queue.
    */
   async createQueue(): Promise<GetQueueResult> {
-    await this.requireUserAuth();
+    await requireUserAuth();
     const result = await this.apiService.createPlayQueue();
     return { queue: result.queue };
   }
@@ -78,7 +78,7 @@ export class QueueController {
    * Delete a play queue.
    */
   async deleteQueue(queueId: string): Promise<void> {
-    await this.requireUserAuth();
+    await requireUserAuth();
     validateQueueId(queueId);
     await this.apiService.deletePlayQueue(queueId);
   }
@@ -87,7 +87,7 @@ export class QueueController {
    * Update queue settings (repeat mode, shuffle).
    */
   async updateQueue(queueId: string, options: UpdateQueueOptions): Promise<void> {
-    await this.requireUserAuth();
+    await requireUserAuth();
     validateQueueId(queueId);
 
     if (options.repeat != null) {
@@ -101,7 +101,7 @@ export class QueueController {
    * Add tracks to the queue.
    */
   async addToQueue(queueId: string, options: AddToQueueOptions): Promise<void> {
-    await this.requireUserAuth();
+    await requireUserAuth();
     validateQueueId(queueId);
 
     if (options.trackIds.length === 0) {
@@ -120,7 +120,7 @@ export class QueueController {
     trackId: string,
     itemId: string,
   ): Promise<void> {
-    await this.requireUserAuth();
+    await requireUserAuth();
     validateQueueId(queueId);
 
     await this.apiService.removeFromQueue(queueId, [{ trackId, itemId }]);
@@ -130,7 +130,7 @@ export class QueueController {
    * Clear all tracks from the queue (future tracks only, keeps current).
    */
   async clearQueue(queueId: string): Promise<void> {
-    await this.requireUserAuth();
+    await requireUserAuth();
     validateQueueId(queueId);
     await this.apiService.clearQueue(queueId);
   }
@@ -139,7 +139,7 @@ export class QueueController {
    * Skip to a specific track in the queue.
    */
   async skipTo(queueId: string, trackId: string, itemId: string): Promise<void> {
-    await this.requireUserAuth();
+    await requireUserAuth();
     validateQueueId(queueId);
     await this.apiService.setCurrentTrack(queueId, trackId, itemId);
   }
@@ -148,7 +148,7 @@ export class QueueController {
    * Toggle shuffle mode.
    */
   async toggleShuffle(queueId: string): Promise<boolean> {
-    await this.requireUserAuth();
+    await requireUserAuth();
     validateQueueId(queueId);
 
     const { queue } = await this.apiService.getPlayQueue(queueId, []);
@@ -162,7 +162,7 @@ export class QueueController {
    * Cycle through repeat modes: none -> all -> one -> none
    */
   async cycleRepeat(queueId: string): Promise<RepeatMode> {
-    await this.requireUserAuth();
+    await requireUserAuth();
     validateQueueId(queueId);
 
     const { queue } = await this.apiService.getPlayQueue(queueId, []);
@@ -176,13 +176,6 @@ export class QueueController {
     const newRepeat = nextMode[queue.repeat];
     await this.apiService.updatePlayQueue(queueId, { repeat: newRepeat });
     return newRepeat;
-  }
-
-  private async requireUserAuth(): Promise<void> {
-    const loggedIn = await isUserLoggedIn();
-    if (!loggedIn) {
-      throw new UserAuthRequiredError();
-    }
   }
 }
 

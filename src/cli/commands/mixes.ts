@@ -2,7 +2,7 @@ import { Command } from 'commander';
 import type { UserController, MixesResult } from '../../controllers/user.ts';
 import type { MixType } from '../../domain/user.ts';
 import type { Playlist } from '../../domain/media.ts';
-import { TidalCliError } from '../../domain/errors.ts';
+import { formatCliError } from '../utils.ts';
 
 interface MixesCommandOptions {
   type?: string;
@@ -73,11 +73,4 @@ function appendPlaylists(lines: string[], playlists: Playlist[]): void {
     const duration = p.durationText != null ? ` - ${p.durationText}` : '';
     lines.push(`  ${p.name}${count}${duration} - ${p.url}`);
   }
-}
-
-function formatCliError(err: unknown): string {
-  if (err instanceof TidalCliError) {
-    return `Error [${err.code}]: ${err.message}`;
-  }
-  return `Error: ${err instanceof Error ? err.message : String(err)}`;
 }

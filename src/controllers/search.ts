@@ -19,6 +19,7 @@ import {
   type SearchType,
 } from '../domain/search.ts';
 import { ValidationError } from '../domain/errors.ts';
+import { normalizeCountryCode } from './utils.ts';
 
 const searchTypes = new Set<SearchType>([
   'tracks',
@@ -122,14 +123,6 @@ function validateExplicitFilter(
   ) {
     throw new ValidationError('Explicit filter must be INCLUDE or EXCLUDE');
   }
-}
-
-function normalizeCountryCode(countryCode: string): string {
-  const normalized = countryCode.trim().toUpperCase();
-  if (!/^[A-Z]{2}$/.test(normalized)) {
-    throw new ValidationError('Country code must be a 2-letter ISO code');
-  }
-  return normalized;
 }
 
 function normalizeLimit(limit = defaultSearchLimit): number {

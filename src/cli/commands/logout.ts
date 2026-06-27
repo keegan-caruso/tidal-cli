@@ -1,6 +1,6 @@
 import { Command } from 'commander';
 import { logoutUser, isUserLoggedIn } from '../../services/auth.ts';
-import { TidalCliError } from '../../domain/errors.ts';
+import { formatCliError } from '../utils.ts';
 
 export function createLogoutCommand(): Command {
   const cmd = new Command('logout');
@@ -24,11 +24,4 @@ export function createLogoutCommand(): Command {
     });
 
   return cmd;
-}
-
-function formatCliError(err: unknown): string {
-  if (err instanceof TidalCliError) {
-    return `Error [${err.code}]: ${err.message}`;
-  }
-  return `Error: ${err instanceof Error ? err.message : String(err)}`;
 }

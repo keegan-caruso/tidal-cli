@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { z } from 'zod';
 import { ConfigError } from '../domain/errors.ts';
 import type { SearchDefaults } from '../domain/search.ts';
+import { isNotFoundError } from './fs-utils.ts';
 
 const configSchema = z
   .object({
@@ -48,13 +49,4 @@ export async function loadProjectConfig(
     ...result.data,
     countryCode: result.data.countryCode?.toUpperCase(),
   };
-}
-
-function isNotFoundError(err: unknown): boolean {
-  return (
-    typeof err === 'object' &&
-    err != null &&
-    'code' in err &&
-    err.code === 'ENOENT'
-  );
 }

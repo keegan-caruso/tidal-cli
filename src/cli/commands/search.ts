@@ -1,4 +1,3 @@
-import { spawn } from 'node:child_process';
 import { createInterface } from 'node:readline/promises';
 import { stdin as input, stderr as output } from 'node:process';
 import { Command } from 'commander';
@@ -10,7 +9,8 @@ import type {
   Track,
 } from '../../domain/media.ts';
 import type { SearchResult, SearchType } from '../../domain/search.ts';
-import { NoOpenableResultError, TidalCliError } from '../../domain/errors.ts';
+import { NoOpenableResultError } from '../../domain/errors.ts';
+import { formatCliError, openUrl, parseLimitOption } from '../utils.ts';
 
 interface SearchCommandOptions {
   type?: string;
@@ -211,30 +211,3 @@ async function promptForOpenableResult(
   }
 }
 
-function openUrl(url: string): void {
-  const command =
-    process.platform === 'darwin'
-      ? 'open'
-      : process.platform === 'win32'
-        ? 'cmd'
-        : 'xdg-open';
-  const args =
-    process.platform === 'win32' ? ['/c', 'start', '', url] : [url];
-
-  const child = spawn(command, args, {
-    detached: true,
-    stdio: 'ignore',
-  });
-  child.unref();
-}
-
-function parseLimitOption(value: string): number {
-  return Number(value);
-}
-
-function formatCliError(err: unknown): string {
-  if (err instanceof TidalCliError) {
-    return `Error [${err.code}]: ${err.message}`;
-  }
-  return `Error: ${err instanceof Error ? err.message : String(err)}`;
-}

@@ -2,7 +2,7 @@ import { Command } from 'commander';
 import type { UserController, CollectionResult } from '../../controllers/user.ts';
 import type { CollectionType, CollectionSort, CollectionItem } from '../../domain/user.ts';
 import type { Track, Album, Artist, Playlist } from '../../domain/media.ts';
-import { TidalCliError } from '../../domain/errors.ts';
+import { formatCliError, parseLimitOption } from '../utils.ts';
 
 interface CollectionCommandOptions {
   type?: string;
@@ -213,13 +213,3 @@ function formatAddedAt(isoDate: string): string {
   }
 }
 
-function parseLimitOption(value: string): number {
-  return Number(value);
-}
-
-function formatCliError(err: unknown): string {
-  if (err instanceof TidalCliError) {
-    return `Error [${err.code}]: ${err.message}`;
-  }
-  return `Error: ${err instanceof Error ? err.message : String(err)}`;
-}

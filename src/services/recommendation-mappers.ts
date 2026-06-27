@@ -25,7 +25,6 @@ export interface ArtistRadioResult {
 
 export function mapSimilarArtistsResponse(doc: ArtistsRelDoc): SimilarArtistsResult {
   const included = doc.included ?? [];
-  const index = createIncludedIndex(included);
   const artists: Artist[] = [];
 
   for (const resource of included) {

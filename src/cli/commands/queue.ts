@@ -1,7 +1,7 @@
 import { Command } from 'commander';
 import type { QueueController, GetQueueResult, ListQueuesResult } from '../../controllers/queue.ts';
 import type { PlayQueue, QueueItem, RepeatMode } from '../../domain/queue.ts';
-import { TidalCliError } from '../../domain/errors.ts';
+import { formatCliError } from '../utils.ts';
 
 interface QueueShowOptions {
   id?: string;
@@ -331,11 +331,4 @@ function formatRepeatMode(mode: RepeatMode): string {
     case 'all':
       return 'all';
   }
-}
-
-function formatCliError(err: unknown): string {
-  if (err instanceof TidalCliError) {
-    return `Error [${err.code}]: ${err.message}`;
-  }
-  return `Error: ${err instanceof Error ? err.message : String(err)}`;
 }

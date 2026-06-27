@@ -35,9 +35,7 @@ export interface CollectionPlaylistsResult {
   cursor?: string;
 }
 
-export function mapDailyMixesResponse(
-  doc: components['schemas']['UserDailyMixes_Single_Resource_Data_Document'],
-): MixesResult {
+function mapMixesResponse(doc: { included?: IncludedResource[] }): MixesResult {
   const included = doc.included ?? [];
   const playlists: Playlist[] = [];
 
@@ -51,42 +49,24 @@ export function mapDailyMixesResponse(
   }
 
   return { playlists };
+}
+
+export function mapDailyMixesResponse(
+  doc: components['schemas']['UserDailyMixes_Single_Resource_Data_Document'],
+): MixesResult {
+  return mapMixesResponse(doc);
 }
 
 export function mapDiscoveryMixesResponse(
   doc: components['schemas']['UserDiscoveryMixes_Single_Resource_Data_Document'],
 ): MixesResult {
-  const included = doc.included ?? [];
-  const playlists: Playlist[] = [];
-
-  for (const resource of included) {
-    if (resource.type === 'playlists') {
-      const r = resource as components['schemas']['Playlists_Resource_Object'];
-      if (r.attributes != null) {
-        playlists.push(mapPlaylist(r.id, r.attributes));
-      }
-    }
-  }
-
-  return { playlists };
+  return mapMixesResponse(doc);
 }
 
 export function mapNewReleaseMixesResponse(
   doc: components['schemas']['UserNewReleaseMixes_Single_Resource_Data_Document'],
 ): MixesResult {
-  const included = doc.included ?? [];
-  const playlists: Playlist[] = [];
-
-  for (const resource of included) {
-    if (resource.type === 'playlists') {
-      const r = resource as components['schemas']['Playlists_Resource_Object'];
-      if (r.attributes != null) {
-        playlists.push(mapPlaylist(r.id, r.attributes));
-      }
-    }
-  }
-
-  return { playlists };
+  return mapMixesResponse(doc);
 }
 
 export function mapCollectionTracksResponse(

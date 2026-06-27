@@ -1,12 +1,11 @@
 import { createServer } from 'node:http';
-import { spawn } from 'node:child_process';
 import { Command } from 'commander';
 import {
   startLogin,
   completeLogin,
   isUserLoggedIn,
 } from '../../services/auth.ts';
-import { TidalCliError } from '../../domain/errors.ts';
+import { formatCliError, openUrl } from '../utils.ts';
 
 const CALLBACK_PORT = 17893;
 const REDIRECT_URI = `http://localhost:${CALLBACK_PORT}/callback`;
@@ -144,26 +143,3 @@ function createCallbackServer(): CallbackServer {
   return { serverReady, callbackReceived, cleanup };
 }
 
-function openUrl(url: string): void {
-  const command =
-    process.platform === 'darwin'
-      ? 'open'
-      : process.platform === 'win32'
-        ? 'cmd'
-        : 'xdg-open';
-  const args =
-    process.platform === 'win32' ? ['/c', 'start', '', url] : [url];
-
-  const child = spawn(command, args, {
-    detached: true,
-    stdio: 'ignore',
-  });
-  child.unref();
-}
-
-function formatCliError(err: unknown): string {
-  if (err instanceof TidalCliError) {
-    return `Error [${err.code}]: ${err.message}`;
-  }
-  return `Error: ${err instanceof Error ? err.message : String(err)}`;
-}

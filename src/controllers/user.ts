@@ -13,8 +13,8 @@ import {
   defaultCollectionLimit,
   maxCollectionLimit,
 } from '../domain/user.ts';
-import { UserAuthRequiredError, ValidationError } from '../domain/errors.ts';
-import { isUserLoggedIn } from '../services/auth.ts';
+import { ValidationError } from '../domain/errors.ts';
+import { normalizeCountryCode, requireUserAuth } from './utils.ts';
 
 const mixTypes = new Set<MixType>(['daily', 'discovery', 'new-releases']);
 const collectionTypes = new Set<CollectionType>([
@@ -50,7 +50,7 @@ export class UserController {
   }
 
   async getMixes(options: MixOptions = {}): Promise<MixesResult> {
-    await this.requireUserAuth();
+    await requireUserAuth();
 
     const resolved = this.resolveMixOptions(options);
 
@@ -74,7 +74,7 @@ export class UserController {
   }
 
   async getCollection(options: CollectionOptions = {}): Promise<CollectionResult> {
-    await this.requireUserAuth();
+    await requireUserAuth();
 
     const resolved = this.resolveCollectionOptions(options);
 
@@ -112,13 +112,6 @@ export class UserController {
     }
 
     return result;
-  }
-
-  private async requireUserAuth(): Promise<void> {
-    const loggedIn = await isUserLoggedIn();
-    if (!loggedIn) {
-      throw new UserAuthRequiredError();
-    }
   }
 
   private resolveMixOptions(options: MixOptions): ResolvedMixOptions {
@@ -173,14 +166,6 @@ function validateCollectionSort(sort: CollectionSort): void {
   if (!collectionSorts.has(sort)) {
     throw new ValidationError('Sort must be addedAt or -addedAt');
   }
-}
-
-function normalizeCountryCode(countryCode: string): string {
-  const normalized = countryCode.trim().toUpperCase();
-  if (!/^[A-Z]{2}$/.test(normalized)) {
-    throw new ValidationError('Country code must be a 2-letter ISO code');
-  }
-  return normalized;
 }
 
 function normalizeLimit(limit = defaultCollectionLimit): number {

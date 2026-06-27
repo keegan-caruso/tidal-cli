@@ -11,8 +11,7 @@ import {
   setCachedProfile,
   clearProfileCache,
 } from '../services/profile-cache.ts';
-import { UserAuthRequiredError } from '../domain/errors.ts';
-import { isUserLoggedIn } from '../services/auth.ts';
+import { requireUserAuth } from './utils.ts';
 
 // Cache TTL: 24 hours
 const PROFILE_CACHE_TTL_MS = 24 * 60 * 60 * 1000;
@@ -36,7 +35,7 @@ export class ProfileController {
   async getListeningProfile(
     options: GetProfileOptions = {},
   ): Promise<GetProfileResult> {
-    await this.requireUserAuth();
+    await requireUserAuth();
 
     // Check cache first (unless force refresh)
     if (!options.forceRefresh) {
@@ -209,12 +208,5 @@ export class ProfileController {
       generatedAt: now.toISOString(),
       expiresAt: expiresAt.toISOString(),
     };
-  }
-
-  private async requireUserAuth(): Promise<void> {
-    const loggedIn = await isUserLoggedIn();
-    if (!loggedIn) {
-      throw new UserAuthRequiredError();
-    }
   }
 }

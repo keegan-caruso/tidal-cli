@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
+import { isNotFoundError } from './fs-utils.ts';
 
 export async function loadProjectEnv(cwd = process.cwd()): Promise<void> {
   const path = join(cwd, '.env');
@@ -42,13 +43,4 @@ function unquoteEnvValue(value: string): string {
   if ((quote !== '"' && quote !== "'") || value.at(-1) !== quote) return value;
 
   return value.slice(1, -1);
-}
-
-function isNotFoundError(err: unknown): boolean {
-  return (
-    typeof err === 'object' &&
-    err != null &&
-    'code' in err &&
-    err.code === 'ENOENT'
-  );
 }
